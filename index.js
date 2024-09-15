@@ -5,7 +5,6 @@ const stopButton = document.getElementById('stopButton')
 const downloadButton = document.getElementById('downloadButton')
 const logElement = document.getElementById('log')
 
-const lengthTimeMS = 5000
 const recordingTimeMS = 5000
 
 function log(msg) {
@@ -51,13 +50,13 @@ const handleStartButtonClick = () =>
       preview.captureStream = preview.captureStream || preview.mozCaptureStream
       return new Promise(resolve => preview.onplaying = resolve)
     })
-    .then(() => startRecording(preview.captureStream()))
+    .then(() => startRecording(preview.captureStream(), recordingTimeMS))
     .then(recordedChunks => {
       const recordedBlob = new Blob(recordedChunks, { type: 'video/webm' })
       recording.src = URL.createObjectURL(recordedBlob)
       downloadButton.href = recording.src
       downloadButton.download = 'recorded-video.webm'
-      log(`Successfully recorded ${recordedBlob.size} bytes ${redcordedBlog.type} media.`)
+      log(`Successfully recorded ${recordedBlob.size} bytes ${recordedBlob.type} media.`)
     })
     .catch(error => {
       if (error.name === 'NotFoundError') {
