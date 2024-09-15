@@ -33,3 +33,8 @@ h2 {
   grid-template-columns: auto auto 1fr;
   gap: 50px;
 }
+
+#log {
+  max-height: 90vh;
+  overflow-y: auto;
+}

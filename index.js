@@ -6,6 +6,8 @@ const downloadButton = document.getElementById('downloadButton')
 const logElement = document.getElementById('log')
 
 const recordingTimeMS = 5000
+let countdown = 5
+let intervalId
 
 function log(msg) {
   logElement.innerText += `${msg}\n`
@@ -15,6 +17,18 @@ function wait(delayInMs) {
   return new Promise((resolve) => setTimeout(resolve, delayInMs))
 }
 
+function timer() {
+  countdown = 5
+  clearTimeout(intervalId)
+  intervalId = setInterval(() => {
+    countdown--
+    log(`${countdown}s`)
+    if (countdown <= 0) {
+      clearTimeout(intervalId)
+    }
+  }, 1000)
+}
+
 function startRecording(stream, lengthTimeMS) {
   const recorder = new MediaRecorder(stream)
   const data = []
@@ -22,6 +36,7 @@ function startRecording(stream, lengthTimeMS) {
   recorder.ondataavailable = (event) => data.push(event.data)
   recorder.start()
   log(`${recorder.state} for ${lengthTimeMS / 1000} seconds...`)
+  timer()
 
   const stopped = new Promise((resolve, reject) => {
     recorder.onstop = resolve
@@ -48,7 +63,7 @@ const handleStartButtonClick = () =>
       preview.srcObject = stream
       downloadButton.href = stream
       preview.captureStream = preview.captureStream || preview.mozCaptureStream
-      return new Promise(resolve => preview.onplaying = resolve)
+      return new Promise(resolve => (preview.onplaying = resolve))
     })
     .then(() => startRecording(preview.captureStream(), recordingTimeMS))
     .then(recordedChunks => {
