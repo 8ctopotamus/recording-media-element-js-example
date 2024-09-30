@@ -30,6 +30,8 @@ function timer() {
 }
 
 function startRecording(stream, lengthTimeMS) {
+    //   downloadButton.href = stream
+
   const recorder = new MediaRecorder(stream)
   const data = []
 
@@ -59,13 +61,7 @@ function stop(stream) {
 const handleStartButtonClick = () => 
   navigator.mediaDevices
     .getUserMedia({ video: true, audio: true })
-    .then(stream => {
-      preview.srcObject = stream
-      downloadButton.href = stream
-      preview.captureStream = preview.captureStream || preview.mozCaptureStream
-      return new Promise(resolve => (preview.onplaying = resolve))
-    })
-    .then(() => startRecording(preview.captureStream(), recordingTimeMS))
+    .then(stream => startRecording(stream, recordingTimeMS))
     .then(recordedChunks => {
       const recordedBlob = new Blob(recordedChunks, { type: 'video/webm' })
       recording.src = URL.createObjectURL(recordedBlob)

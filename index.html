@@ -7,13 +7,11 @@
     <link href="style.css" rel="stylesheet">
   </head>
   <body>
-
-
     <div class="layout-grid">
       <div>
         <div id="startButton" class="button">Start Recording</div>
         <h2>Preview</h2>
-        <video id="preview" width="160" height="120" autoplay muted></video>
+        <canvas id="preview" width="160" height="120"></canvas>
       </div>
       <div>
         <div id="stopButton" class="button">Stop Recording</div>
@@ -21,10 +19,8 @@
         <video id="recording" width="160" height="120" controls></video>
         <a id="downloadButton" class="button">Download</a>
       </div>
-      
       <div id="log"></div>
     </div>
-
     <script src="index.js" type="text/javascript"></script>
   </body>
 </html>
