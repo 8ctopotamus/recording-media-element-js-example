@@ -30,8 +30,13 @@ function timer() {
 }
 
 function startRecording(stream, lengthTimeMS) {
-    //   downloadButton.href = stream
+  // play preview in video el
+  recording.srcObject = stream
+  recording.load()
+  recording.play()
 
+
+  // record
   const recorder = new MediaRecorder(stream)
   const data = []
 
