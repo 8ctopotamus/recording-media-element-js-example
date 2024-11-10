@@ -7,19 +7,21 @@ const waitInterval = (maxDuration) => new Promise((resolve, reject) => {
   
   intervalId = setInterval(() => {
     if (countdown <= 0 || !shouldKeepWaiting) {
-      resolve()
+      clearInterval(intervalId)
+			resolve()
     }
+		console.log(countdown, shouldKeepWaiting)
     countdown--
   }, 1000)
 })
 
-;(async () => {
-  const intervalDone = await waitInterval(10000)
-  
-  console.log(intervalDone)
+waitInterval(10000).then(() => {
+	console.log('Interval done.') 
+	process.exit(0)
+})
 
-  process.exit(0)
-})()
-
+setInterval(() => {
+	shouldKeepWaiting = false
+}, 2000)
 
 
