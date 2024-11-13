@@ -5,15 +5,13 @@ const stopButton = document.getElementById('stopButton')
 const downloadButton = document.getElementById('downloadButton')
 const logElement = document.getElementById('log')
 
-const recordingTimeMS = 5000
-let countdown = 5
-let intervalId
+const maxRecordingTimeMS = 5000
 
 let waitIntervalId
 let shouldKeepWaiting = true
 
-const waitInterval = (maxDuration) => new Promise((resolve, reject) => {
-  let countdown = maxDuration / 1000
+const waitInterval = (lengthTimeMS) => new Promise((resolve) => {
+  let countdown = lengthTimeMS / 1000
   
   waitIntervalId = setInterval(() => {
     countdown--
@@ -21,19 +19,11 @@ const waitInterval = (maxDuration) => new Promise((resolve, reject) => {
       clearInterval(waitIntervalId)
 			resolve()
     }
-		console.log(countdown, shouldKeepWaiting)
+    log(`${countdown} ${shouldKeepWaiting}`)
   }, 1000)
 })
 
 // testing 
-
-//waitInterval(10000).then(() => {
-	//console.log('Interval done.') 
-//})
-
-// setInterval(() => {
-	//shouldKeepWaiting = false
-// }, 2000)
 
 function log(msg) {
   logElement.innerText += `${msg}\n`
@@ -43,24 +33,13 @@ function wait(delayInMs) {
   return new Promise((resolve) => setTimeout(resolve, delayInMs))
 }
 
-function timer() {
-  countdown = 5
-  clearTimeout(intervalId)
-  intervalId = setInterval(() => {
-    countdown--
-    log(`${countdown}s`)
-    if (countdown <= 0) {
-      clearTimeout(intervalId)
-    }
-  }, 1000)
-}
-
 function startRecording(stream, lengthTimeMS) {
+  shouldKeepWaiting = true
+
   // play preview in video el
   recording.srcObject = stream
   recording.load()
   recording.play()
-
 
   // record
   const recorder = new MediaRecorder(stream)
@@ -68,8 +47,8 @@ function startRecording(stream, lengthTimeMS) {
 
   recorder.ondataavailable = (event) => data.push(event.data)
   recorder.start()
+  
   log(`${recorder.state} for ${lengthTimeMS / 1000} seconds...`)
-  timer()
 
   const stopped = new Promise((resolve, reject) => {
     recorder.onstop = resolve
@@ -85,15 +64,14 @@ function startRecording(stream, lengthTimeMS) {
   return Promise.all([stopped, recorded]).then(() => data)
 }
 
-function stop(stream) {
+function stop() {
 	shouldKeepWaiting = false
-	stream?.getTracks()?.forEach(track => track.stop())
 }
 
 const handleStartButtonClick = () => 
   navigator.mediaDevices
     .getUserMedia({ video: true, audio: true })
-    .then(stream => startRecording(stream, recordingTimeMS))
+    .then(stream => startRecording(stream, maxRecordingTimeMS))
     .then(recordedChunks => {
       const recordedBlob = new Blob(recordedChunks, { type: 'video/webm' })
       recording.src = URL.createObjectURL(recordedBlob)
@@ -109,7 +87,7 @@ const handleStartButtonClick = () =>
       }
     })
 
-const handleStopButtonClick = () => stop(preview.srcObject)
+const handleStopButtonClick = () => stop()
 
 startButton.addEventListener('click', handleStartButtonClick, false)
 stopButton.addEventListener('click', handleStopButtonClick, false)
