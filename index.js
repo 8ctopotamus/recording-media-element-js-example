@@ -73,10 +73,10 @@ const handleStartButtonClick = () =>
     .getUserMedia({ video: true, audio: true })
     .then(stream => startRecording(stream, maxRecordingTimeMS))
     .then(recordedChunks => {
-      const recordedBlob = new Blob(recordedChunks, { type: 'video/webm' })
+      const recordedBlob = new Blob(recordedChunks, { type: 'video/mp4' })
       recording.src = URL.createObjectURL(recordedBlob)
       downloadButton.href = recording.src
-      downloadButton.download = 'recorded-video.webm'
+      downloadButton.download = 'recorded-video.mp4'
       log(`Successfully recorded ${recordedBlob.size} bytes ${recordedBlob.type} media.`)
     })
     .catch(error => {
